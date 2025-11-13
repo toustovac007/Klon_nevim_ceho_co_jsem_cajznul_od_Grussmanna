@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: audio-transcribe
+    container_name: flask-audio
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./uploads:/app/uploads
+    env_file:
+      - .env
+    environment:
+      - GUNICORN_CMD_ARGS=--bind=0.0.0.0:5000 --workers=2 --threads=4 --worker-class=gthread --access-logfile=- --error-logfile=-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+  # Uncomment to add development service with hot-reload
+  # web-dev:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   image: audio-transcribe-dev
+  #   container_name: flask-audio-dev
+  #   ports:
+  #     - "5001:5000"
+  #   volumes:
+  #     - .:/app
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - FLASK_DEBUG=1
+  #   command: python app.py
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+    driver: bridge

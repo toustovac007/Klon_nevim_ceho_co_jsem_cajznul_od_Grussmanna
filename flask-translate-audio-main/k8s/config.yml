@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: audio-transcribe-config
+data:
+  TRANSCRIBE_API_URL: "https://aivoice.sspu-opava.cz"
+  TRANSCRIBE_ENDPOINT: "/inference"
+  TRANSCRIBE_API_MANUAL: "http://192.168.22.141:9010"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: audio-transcribe-secret
+type: Opaque
+data:
+  FLASK_SECRET: Y2hhbmdlLW1lLWluLXByb2R1Y3Rpb24K  # Base64 encoded "change-me-in-production"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audio-uploads-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
